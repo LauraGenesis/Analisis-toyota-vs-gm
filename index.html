@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toyota vs GM — Análisis Comparativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=Archivo:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F0;
+  --surface:#FFFFFF;
+  --border:#E2DDD6;
+  --text:#1A1814;
+  --muted:#7A756C;
+  --toyota:#CC0000;
+  --gm:#1A52A8;
+  --gap:#E8E3DC;
+}
+body{background:var(--bg);color:var(--text);font-family:'Archivo',sans-serif;font-size:15px;line-height:1.6}
+.page{max-width:1120px;margin:0 auto;padding:48px 32px 80px}
+
+/* HEADER */
+header{margin-bottom:52px;border-bottom:1px solid var(--border);padding-bottom:32px}
+.eyebrow{font-family:'Archivo',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+h1{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,52px);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:var(--text)}
+h1 em{font-style:italic}
+.header-sub{margin-top:10px;font-size:14px;color:var(--muted)}
+
+/* SECTION TITLES */
+.section-label{font-family:'Archivo',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+section{margin-bottom:60px}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 24px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.toyota::before{background:var(--toyota)}
+.kpi.gm::before{background:var(--gm)}
+.kpi.neutral::before{background:var(--text)}
+.kpi-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:clamp(20px,3vw,28px);font-weight:500;color:var(--text);line-height:1}
+.kpi-badge{display:inline-block;margin-top:8px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px}
+.kpi.toyota .kpi-badge{background:#FFF0F0;color:var(--toyota)}
+.kpi.gm .kpi-badge{background:#EEF3FF;color:var(--gm)}
+.kpi.neutral .kpi-badge{background:#F0EDE8;color:var(--text)}
+.kpi-sub{margin-top:6px;font-size:12px;color:var(--muted)}
+
+/* CHART CARD */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 28px 22px}
+.chart-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.chart-title{font-family:'Fraunces',serif;font-size:18px;font-weight:300}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filter-btn{font-family:'Archivo',sans-serif;font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.filter-btn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.chart-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.legend-dot{width:28px;height:2.5px;border-radius:2px}
+
+/* PHILOSOPHY */
+.philosophy-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:800px){.philosophy-grid{grid-template-columns:1fr}}
+.philosophy-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.philosophy-header{padding:24px 28px 0}
+.philosophy-company{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.philosophy-company.toyota{color:var(--toyota)}
+.philosophy-company.gm{color:var(--gm)}
+.philosophy-title{font-family:'Fraunces',serif;font-size:20px;font-weight:300;font-style:italic;line-height:1.2;margin-bottom:16px}
+.philosophy-text{padding:0 28px;font-size:13.5px;color:#3D3931;line-height:1.75}
+.philosophy-text p{margin-bottom:12px}
+.philosophy-chart{padding:20px 20px 16px;border-top:1px solid var(--gap);margin-top:20px}
+.chart-mini-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.mini-legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.mini-legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.mini-legend-dot{width:20px;height:2px;border-radius:2px}
+
+/* VOLATILITY */
+.vol-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0 28px}
+@media(max-width:700px){.vol-kpis{grid-template-columns:repeat(2,1fr)}}
+.vol-kpi{background:#F7F5F0;border-radius:8px;padding:14px 16px;min-width:0}
+.vol-kpi.toy{background:#FFF5F5}
+.vol-kpi.gm{background:#EEF3FF}
+.vol-kpi-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.vol-kpi-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;line-height:1}
+.vol-kpi-val.toy{color:var(--toyota)}
+.vol-kpi-val.gm{color:var(--gm)}
+.vol-kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.vol-subtitle{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:4px}
+
+/* SORPASO MOMENTS */
+.momentos{margin-top:28px;display:flex;flex-direction:column;gap:18px}
+.momento{padding:4px 0 4px 16px;border-left:2px solid var(--border)}
+.momento.toy{border-left-color:var(--toyota)}
+.momento.gm{border-left-color:var(--gm)}
+.momento-year{font-size:12px;font-weight:500;letter-spacing:.04em;margin-bottom:6px}
+.momento.toy .momento-year{color:var(--toyota)}
+.momento.gm .momento-year{color:var(--gm)}
+.momento-text{font-size:13.5px;line-height:1.7;color:#3D3931}
+
+/* REVENUE KPIs */
+.rev-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0 22px}
+@media(max-width:700px){.rev-kpis{grid-template-columns:1fr}}
+.rev-kpi{border-radius:8px;padding:13px 15px;min-width:0}
+.rev-kpi.toy{background:rgba(204,0,0,0.06)}
+.rev-kpi.gm{background:rgba(26,82,168,0.05)}
+.rev-kpi.neutral{background:#F0EDE8}
+.rev-kpi-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.rev-kpi-val{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:500;line-height:1}
+.rev-kpi-val.toy{color:var(--toyota)}
+.rev-kpi-val.gm{color:var(--gm)}
+.rev-kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* REFERENCES */
+.references{margin-top:72px}
+.ref-list{display:flex;flex-direction:column;gap:14px}
+.ref{font-size:12.5px;line-height:1.6;color:#3D3931;padding-left:1.5rem;text-indent:-1.5rem}
+.ref em{font-style:italic}
+.ref a{color:var(--muted);text-decoration:none;word-break:break-all;border-bottom:0.5px solid transparent;transition:border-color .15s}
+.ref a:hover{border-bottom-color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<header>
+  <p class="eyebrow">Análisis comparativo · 1908–2024</p>
+  <h1>Toyota <em>vs</em> General Motors</h1>
+  <p class="header-sub">Dos modelos industriales. Un siglo de divergencia.</p>
+</header>
+
+<!-- KPI CARDS -->
+<section>
+  <p class="section-label">Indicadores clave 2024</p>
+  <div class="kpi-grid">
+
+    <div class="kpi toyota">
+      <p class="kpi-label">Ventas Toyota 2024</p>
+      <p class="kpi-value">11.011.375</p>
+      <span class="kpi-badge">uds. vendidas</span>
+      <p class="kpi-sub">Líder mundial</p>
+    </div>
+
+    <div class="kpi gm">
+      <p class="kpi-label">Ventas GM 2024</p>
+      <p class="kpi-value">6.001.247</p>
+      <span class="kpi-badge">uds. vendidas</span>
+      <p class="kpi-sub">Foco EE.UU. + China</p>
+    </div>
+
+    <div class="kpi neutral">
+      <p class="kpi-label">Ventaja Toyota</p>
+      <p class="kpi-value">5.010.128</p>
+      <span class="kpi-badge">+83% sobre GM</span>
+      <p class="kpi-sub">Diferencia en unidades</p>
+    </div>
+
+    <div class="kpi neutral">
+      <p class="kpi-label">Ingresos combinados</p>
+      <p class="kpi-value">$462.90 B</p>
+      <span class="kpi-badge">USD 2024</span>
+      <p class="kpi-sub">Toyota $291.00 B · GM $171.90 B</p>
+    </div>
+
+    <div class="kpi toyota">
+      <p class="kpi-label">CAGR Toyota 20 años</p>
+      <p class="kpi-value">+2.29%</p>
+      <span class="kpi-badge">crecimiento anual</span>
+      <p class="kpi-sub">2004 → 2024 · 7.000.000 → 11.011.375</p>
+    </div>
+
+    <div class="kpi gm">
+      <p class="kpi-label">CAGR GM 20 años</p>
+      <p class="kpi-value">−2.06%</p>
+      <span class="kpi-badge">contracción anual</span>
+      <p class="kpi-sub">2004 → 2024 · ~8.000.000 → 6.001.247</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- GLOBAL SALES CHART -->
+<section>
+  <p class="section-label">Ventas globales</p>
+  <div class="chart-card">
+    <div class="chart-header">
+      <p class="chart-title">Toyota vs General Motors · ventas anuales</p>
+      <div class="filters">
+        <button class="filter-btn active" data-range="todo">Todo</button>
+        <button class="filter-btn" data-range="sigloxx">Siglo XX</button>
+        <button class="filter-btn" data-range="moderna">Era moderna</button>
+        <button class="filter-btn" data-range="precrisis">Pre-crisis</button>
+        <button class="filter-btn" data-range="postcrisis">Post-crisis</button>
+        <button class="filter-btn" data-range="sobrepaso">Sobrepaso</button>
+      </div>
+    </div>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#CC0000"></span>Toyota</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1A52A8;border-top:2.5px dashed #1A52A8;background:transparent"></span>General Motors</span>
+      <span class="legend-item"><span style="display:inline-block;width:1.5px;height:13px;background:#B0AAA2;margin-right:3px;vertical-align:middle"></span>Crisis 2008–09</span>
+    </div>
+    <div style="position:relative;width:100%;height:320px">
+      <canvas id="globalChart" role="img" aria-label="Ventas globales Toyota vs GM 1950-2024">Ventas anuales Toyota y General Motors. Toyota supera a GM definitivamente a partir de 2012.</canvas>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section>
+  <p class="section-label">Filosofía de producción</p>
+  <div class="philosophy-grid">
+
+    <!-- GM / SLOAN -->
+    <div class="philosophy-block">
+      <div class="philosophy-header">
+        <p class="philosophy-company gm">General Motors</p>
+        <p class="philosophy-title">El modelo Sloan: escala, variedad, crédito</p>
+      </div>
+      <div class="philosophy-text">
+        <p>Alfred P. Sloan, presidente de GM entre 1923 y 1956, inventó la corporación automotriz moderna. Su doctrina era simple y brillante: un coche para cada bolsillo y cada propósito. GM ordenó sus marcas en una escalera —Chevrolet, Pontiac, Oldsmobile, Buick, Cadillac— cada una apuntando a un escalón de renta.</p>
+        <p>Este modelo alcanzó su cúspide en los años 60 — casi uno de cada dos coches vendidos en Estados Unidos llevaba un logo de GM. Pero la lógica que lo sostenía era frágil: dependía de volumen constante, márgenes delgados por unidad, inventarios enormes en fábrica y concesionario, y sobre todo, de una financiación abundante y barata. Cuando cualquiera de esas piezas fallaba, la estructura entera temblaba.</p>
+      </div>
+      <div class="philosophy-chart">
+        <p class="chart-mini-title">Producción por marca · 1970–2024</p>
+        <div id="gm-brand-filters" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"></div>
+        <div style="position:relative;width:100%;height:220px">
+          <canvas id="gmMiniChart" role="img" aria-label="Producción GM por marca 1970-2024, interactivo"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOYOTA / TPS -->
+    <div class="philosophy-block">
+      <div class="philosophy-header">
+        <p class="philosophy-company toyota">Toyota</p>
+        <p class="philosophy-title">El Toyota Production System: escasez como método</p>
+      </div>
+      <div class="philosophy-text">
+        <p>En el otro lado del Pacífico, Taiichi Ohno pasó tres décadas (1948–1978) construyendo lo contrario de GM. Su punto de partida fue una limitación: Toyota no podía permitirse inventarios porque Japón salía de la guerra sin capital. La escasez forzó una disciplina que después se haría famosa como <em>lean manufacturing</em>: producir exactamente lo que el siguiente eslabón necesita (<em>just-in-time</em>), parar la línea entera si una sola pieza sale defectuosa (<em>jidoka</em>), mejorar en incrementos diarios y pequeños (<em>kaizen</em>).</p>
+        <p>El resultado medible es casi mágico — las curvas de producción y ventas de Toyota están prácticamente superpuestas desde 1970. GM, en contraste, operaba con inventarios de 60–90 días en concesionario, una bomba que estallaba cada vez que caía la demanda.</p>
+      </div>
+      <div class="philosophy-chart">
+        <p class="chart-mini-title">Producción total · 1970–2024</p>
+        <div class="mini-legend">
+          <span><span class="mini-legend-dot" style="display:inline-block;background:#CC0000"></span> Producción Toyota</span>
+        </div>
+        <div style="position:relative;width:100%;height:200px">
+          <canvas id="toyotaMiniChart" role="img" aria-label="Producción Toyota total 1970-2024"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- VOLATILITY SECTION -->
+<section>
+  <p class="section-label">Volatilidad histórica</p>
+  <div class="chart-card">
+    <div class="chart-header" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <p class="chart-title">Estabilidad como ventaja competitiva</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5;max-width:640px">
+        Variaciones año/año y desviación estándar rodante. Calculado sobre el período 2001–2024 — la ventana donde disponemos de datos anuales consecutivos comparables.
+      </p>
+    </div>
+
+    <div class="vol-kpis" id="vol-kpis"></div>
+
+    <p class="vol-subtitle">Variación año/año · % cambio respecto al año anterior</p>
+    <div style="position:relative;width:100%;height:260px;margin-bottom:28px">
+      <canvas id="yoyChart" role="img" aria-label="Variación anual Toyota vs GM 2001-2024"></canvas>
+    </div>
+
+    <p class="vol-subtitle">Volatilidad móvil · desviación estándar a 5 años</p>
+    <div style="position:relative;width:100%;height:200px">
+      <canvas id="volChart" role="img" aria-label="Volatilidad móvil 5 años Toyota vs GM"></canvas>
+    </div>
+
+    <p style="font-size:11px;color:#9A958E;margin-top:14px;line-height:1.5">
+      σ = desviación estándar de las variaciones anuales (YoY%). Cuanto mayor σ, más impredecibles son las ventas año a año.
+    </p>
+  </div>
+</section>
+
+<!-- SORPASO SECTION -->
+<section>
+  <p class="section-label">El sorpaso · 2004–2014</p>
+  <div class="chart-card">
+    <div class="chart-header" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <p class="chart-title">Batalla por el liderazgo mundial</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5;max-width:640px">
+        Toyota y GM cruzan posiciones tres veces en una década. Datos oficiales de ventas globales: Automotive News, OICA, informes anuales.
+      </p>
+    </div>
+
+    <div class="chart-legend" style="margin-top:18px">
+      <span class="legend-item"><span class="legend-dot" style="background:#CC0000"></span>Toyota</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1A52A8;border-top:2.5px dashed #1A52A8;background:transparent"></span>General Motors</span>
+    </div>
+
+    <div style="position:relative;width:100%;height:340px">
+      <canvas id="sorpasoChart" role="img" aria-label="Ventas globales Toyota vs GM 2004-2014">Toyota supera a GM en 2008 (8.97M vs 8.36M), GM reconquista en 2011 tras tsunami en Japón, Toyota se consolida líder en 2012.</canvas>
+    </div>
+
+    <div class="momentos">
+      <div class="momento toy">
+        <p class="momento-year">2007 · empate técnico</p>
+        <p class="momento-text">Las dos curvas se tocan. GM seguía líder nominal desde 1931, pero por menos de 3.000 unidades en 9.37M. Nadie se da cuenta todavía de lo que viene.</p>
+      </div>
+      <div class="momento toy">
+        <p class="momento-year">2008 · primer sorpaso</p>
+        <p class="momento-text">Toyota pasa a GM por 600.000 unidades. No es una victoria espectacular sino la consecuencia mecánica de dos sistemas enfrentados a la misma recesión: Toyota amortigua, GM colapsa.</p>
+      </div>
+      <div class="momento gm">
+        <p class="momento-year">2011 · la reconquista que nadie esperaba</p>
+        <p class="momento-text">GM vuelve al primer puesto. No por méritos propios sino porque el tsunami del 11 de marzo y el accidente de Fukushima paran media producción de Toyota. Es el único momento de la década donde el push-model de GM juega a favor: sin dependencias de inventarios japoneses, pudo seguir produciendo mientras Toyota renegociaba su cadena de suministro.</p>
+      </div>
+      <div class="momento toy">
+        <p class="momento-year">2012 · definitivo</p>
+        <p class="momento-text">Toyota vuelve a pasar y ya no suelta el primer puesto. Desde este año Toyota es líder mundial ininterrumpidamente hasta hoy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INGRESOS SECTION -->
+<section>
+  <p class="section-label">Ingresos anuales · 2000–2024</p>
+  <div class="chart-card">
+    <div class="chart-header">
+      <p class="chart-title">Toyota vs General Motors · facturación</p>
+      <div class="filters" id="rev-filters"></div>
+    </div>
+
+    <div id="rev-kpis" class="rev-kpis"></div>
+
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#CC0000"></span>Toyota</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1A52A8;border-top:2.5px dashed #1A52A8;background:transparent"></span>General Motors</span>
+    </div>
+
+    <div style="position:relative;width:100%;height:320px">
+      <canvas id="revChart" role="img" aria-label="Ingresos anuales Toyota vs GM 2000-2024">Toyota supera a GM en ingresos en 2007 y la brecha crece sostenidamente.</canvas>
+    </div>
+
+    <p style="font-size:11px;color:#9A958E;margin-top:12px;line-height:1.5">
+      Ingresos consolidados en miles de millones USD · Toyota FY convertido a año calendario · Discontinuidad GM 2009 (quiebra)
+    </p>
+
+    <div class="momentos">
+      <div class="momento toy">
+        <p class="momento-year">2007 · sorpaso en ingresos</p>
+        <p class="momento-text">Toyota superó a GM en facturación un año antes que en unidades. En 2000 GM facturaba $184B vs Toyota $116B — GM era casi el doble. El cruce ocurre antes en ingresos porque Toyota mantenía mejor margen por coche.</p>
+      </div>
+      <div class="momento toy">
+        <p class="momento-year">2008 · pico histórico de Toyota</p>
+        <p class="momento-text">Toyota alcanzó $262B mientras GM caía a $149B. Llegó a ingresar 1.75× lo que GM, el mismo año en que el fabricante americano iba hacia la quiebra.</p>
+      </div>
+      <div class="momento gm">
+        <p class="momento-year">Post-2009 · brecha permanente</p>
+        <p class="momento-text">GM nunca recupera la escala pre-crisis. Su máximo histórico fue $207B en 2006; quince años después sigue por debajo de ese pico. Toyota, en cambio, ya ha superado su propio pico de 2008.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MONTE CARLO SECTION -->
+<section>
+  <p class="section-label">Proyección Monte Carlo · 2025–2030</p>
+  <div class="chart-card">
+    <div class="chart-header" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <p class="chart-title">Escenarios probabilísticos a 6 años</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5;max-width:640px">
+        Movimiento browniano geométrico usando CAGR y σ histórica. Toyota: μ=+2.29%, σ=10%. GM: μ=−2.06%, σ=23%. Base 2024.
+      </p>
+    </div>
+
+    <div id="mc-kpis" class="rev-kpis" style="margin-top:20px"></div>
+
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#CC0000"></span>Toyota mediana</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1A52A8;border-top:2.5px dashed #1A52A8;background:transparent"></span>GM mediana</span>
+      <span class="legend-item"><span style="display:inline-block;width:18px;height:10px;background:rgba(120,115,108,0.22);border:0.5px solid rgba(120,115,108,0.4);border-radius:2px"></span>Banda 80% · p10–p90</span>
+    </div>
+
+    <div style="position:relative;width:100%;height:340px">
+      <canvas id="mcChart" role="img" aria-label="Proyección Monte Carlo ventas Toyota vs GM 2025-2030">Toyota crece con baja incertidumbre hacia 12.6M; GM se contrae con alta incertidumbre hacia 5.3M.</canvas>
+    </div>
+
+    <p style="font-size:11px;color:#9A958E;margin-top:12px;line-height:1.5">
+      Bandas analíticas 80% (p10–p90) · Datos 2020–2024 observados · Percentiles derivados de distribución lognormal
+    </p>
+
+    <div class="momentos">
+      <div class="momento gm">
+        <p class="momento-year">El cono de GM es mucho más ancho</p>
+        <p class="momento-text">No porque GM esté "peor" determinísticamente — la mediana baja poco — sino porque su alta volatilidad histórica (σ=23% vs 10% de Toyota) hace que el rango 80% de ventas posibles en 2030 vaya de 2.5M a casi 11M unidades. Es la incertidumbre la que mata, no la tendencia.</p>
+      </div>
+      <div class="momento toy">
+        <p class="momento-year">Toyota tiene un rango mucho más predecible</p>
+        <p class="momento-text">Su banda de ventas en 2030 es aproximadamente 9–17M unidades — amplia, sí, pero con un suelo robusto. Traducción empresarial: los bancos le prestan a Toyota con mejor rating porque "saben" qué va a vender en 2030 dentro de un rango razonable.</p>
+      </div>
+      <div class="momento gm">
+        <p class="momento-year">Probabilidad de reversión ≈ 8%</p>
+        <p class="momento-text">La probabilidad de que GM vuelva a superar a Toyota no es cero. La alta varianza de GM abre la puerta a escenarios de recuperación espectacular (recorte de costes, revolución eléctrica, etc.). Pero en la mayoría de trayectorias plausibles, la brecha se mantiene o crece.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REFERENCES SECTION -->
+<section class="references">
+  <p class="section-label">Referencias · formato APA 7ª ed.</p>
+
+  <div class="ref-list">
+    <p class="ref">Britannica Editors. (2026). <em>General Motors (GM): History, growth, bankruptcy, &amp; recovery</em>. Britannica Money. <a href="https://www.britannica.com/money/General-Motors-Corporation" target="_blank" rel="noopener">https://www.britannica.com/money/General-Motors-Corporation</a></p>
+
+    <p class="ref">General Motors Company. (2023). <em>Form 8-K: Fourth-quarter and full-year 2022 results</em> [Informe financiero]. U.S. Securities and Exchange Commission. <a href="https://www.sec.gov/Archives/edgar/data/0001467858/000146785823000027/q42022earnings01312023.htm" target="_blank" rel="noopener">https://www.sec.gov/Archives/edgar/data/0001467858/000146785823000027/q42022earnings01312023.htm</a></p>
+
+    <p class="ref">General Motors Company. (2024). <em>Form 8-K: Fourth-quarter and full-year 2023 results</em> [Informe financiero]. U.S. Securities and Exchange Commission. <a href="https://www.sec.gov/Archives/edgar/data/0001467858/000146785824000029/a2023q4pressreleaseandfina.htm" target="_blank" rel="noopener">https://www.sec.gov/Archives/edgar/data/0001467858/000146785824000029/a2023q4pressreleaseandfina.htm</a></p>
+
+    <p class="ref">General Motors Company. (2025). <em>Form 8-K: Full-year and fourth-quarter 2024 results</em> [Informe financiero]. U.S. Securities and Exchange Commission. <a href="https://www.sec.gov/Archives/edgar/data/0001467858/000146785825000030/gmq42024pressreleaseandfin.htm" target="_blank" rel="noopener">https://www.sec.gov/Archives/edgar/data/0001467858/000146785825000030/gmq42024pressreleaseandfin.htm</a></p>
+
+    <p class="ref">GoodCarBadCar. (s. f.). <em>US auto sales by brand and model</em>. Recuperado en abril de 2026, de <a href="https://www.goodcarbadcar.net/" target="_blank" rel="noopener">https://www.goodcarbadcar.net/</a></p>
+
+    <p class="ref">History.com Editors. (2009, 21 de enero). <em>Toyota officially passes GM as planet's biggest car maker</em>. HISTORY. <a href="https://www.history.com/this-day-in-history/january-21/toyota-officially-passes-gm-as-planets-biggest-car-maker" target="_blank" rel="noopener">https://www.history.com/this-day-in-history/january-21/toyota-officially-passes-gm-as-planets-biggest-car-maker</a></p>
+
+    <p class="ref">Isidore, C. (2013, 28 de enero). Toyota recaptures global auto sales title. <em>CNN Money</em>. <a href="https://money.cnn.com/2013/01/28/news/companies/toyota-global-sales/" target="_blank" rel="noopener">https://money.cnn.com/2013/01/28/news/companies/toyota-global-sales/</a></p>
+
+    <p class="ref">MacroTrends. (s. f.). <em>General Motors revenue 2012–2025</em>. Recuperado en abril de 2026, de <a href="https://www.macrotrends.net/stocks/charts/GM/general-motors/revenue" target="_blank" rel="noopener">https://www.macrotrends.net/stocks/charts/GM/general-motors/revenue</a></p>
+
+    <p class="ref">MacroTrends. (s. f.). <em>Toyota revenue 2012–2025</em>. Recuperado en abril de 2026, de <a href="https://www.macrotrends.net/stocks/charts/TM/toyota/revenue" target="_blank" rel="noopener">https://www.macrotrends.net/stocks/charts/TM/toyota/revenue</a></p>
+
+    <p class="ref">Ohno, T. (1988). <em>Toyota production system: Beyond large-scale production</em>. CRC Press.</p>
+
+    <p class="ref">Organisation Internationale des Constructeurs d'Automobiles. (s. f.). <em>World motor vehicle production statistics</em>. <a href="https://www.oica.net/" target="_blank" rel="noopener">https://www.oica.net/</a></p>
+
+    <p class="ref">Sloan, A. P. (1964). <em>My years with General Motors</em>. Doubleday.</p>
+
+    <p class="ref">Toyota Motor Corporation. (2024, 1 de agosto). <em>TMC announces April through June 2024 financial results</em> [Comunicado de prensa]. Toyota Newsroom. <a href="https://pressroom.toyota.com/tmc-announces-april-through-june-2024-financial-results/" target="_blank" rel="noopener">https://pressroom.toyota.com/tmc-announces-april-through-june-2024-financial-results/</a></p>
+
+    <p class="ref">Toyota Motor Corporation. (2025, 5 de febrero). <em>TMC announces April through December 2024 financial results</em> [Comunicado de prensa]. Toyota Newsroom. <a href="https://pressroom.toyota.com/tmc-announces-april-through-december-2024-financial-results/" target="_blank" rel="noopener">https://pressroom.toyota.com/tmc-announces-april-through-december-2024-financial-results/</a></p>
+
+    <p class="ref">WallStreetZen. (s. f.). <em>General Motors Co revenue: 2010–2026 annual revenue</em>. Recuperado en abril de 2026, de <a href="https://www.wallstreetzen.com/stocks/us/nyse/gm/revenue" target="_blank" rel="noopener">https://www.wallstreetzen.com/stocks/us/nyse/gm/revenue</a></p>
+
+    <p class="ref">WallStreetZen. (s. f.). <em>Toyota Motor revenue: 2001–2026 annual revenue</em>. Recuperado en abril de 2026, de <a href="https://www.wallstreetzen.com/stocks/us/nyse/tm/revenue" target="_blank" rel="noopener">https://www.wallstreetzen.com/stocks/us/nyse/tm/revenue</a></p>
+
+    <p class="ref">Wikipedia Contributors. (2026). <em>List of automotive manufacturers by production</em>. Wikipedia. <a href="https://en.wikipedia.org/wiki/List_of_automotive_manufacturers_by_production" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/List_of_automotive_manufacturers_by_production</a></p>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ── DATA ────────────────────────────────────────────── */
+const ALL_YEARS = [1950,1955,1960,1965,1970,1975,1980,1985,1990,1995,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+
+const TOYOTA_SALES = [300,600,1100,1400,1609,2336,3293,3790,4217,4603,5742,5910,6400,6780,7000,8524,9016,9497,8972,7234,8557,7908,9748,10117,10230,10151,10213,10466,10529,10740,9528,10498,10489,11478,11011];
+
+const GM_SALES = [1900,2300,3400,4700,4800,4700,4700,5200,4500,5100,5500,5300,5200,5100,5000,5600,5200,5200,4500,2100,3500,4200,4600,4500,4500,4500,4300,4200,4100,4100,2900,3900,3800,4200,6001];
+
+const RANGES = {
+  todo:       { start:1950, end:2024 },
+  sigloxx:    { start:1950, end:1999 },
+  moderna:    { start:2000, end:2024 },
+  precrisis:  { start:2000, end:2007 },
+  postcrisis: { start:2010, end:2024 },
+  sobrepaso:  { start:2007, end:2015 },
+};
+
+function filterData(range) {
+  const {start, end} = RANGES[range];
+  const idx = ALL_YEARS.reduce((a,y,i) => (y >= start && y <= end ? [...a,i] : a), []);
+  return {
+    labels: idx.map(i => ALL_YEARS[i]),
+    toyota: idx.map(i => TOYOTA_SALES[i]),
+    gm:     idx.map(i => GM_SALES[i]),
+  };
+}
+
+/* ── GLOBAL CHART ────────────────────────────────────── */
+const GC = document.getElementById('globalChart');
+let globalChart = null;
+
+const crisisPlugin = {
+  id: 'crisisLine',
+  afterDraw(chart) {
+    const labels = chart.data.labels;
+    const xScale = chart.scales.x;
+    const yScale = chart.scales.y;
+    const ctx = chart.ctx;
+    [2008, 2009].forEach(yr => {
+      const idx = labels.indexOf(yr);
+      if (idx === -1) return;
+      const x = xScale.getPixelForValue(idx);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, yScale.top);
+      ctx.lineTo(x, yScale.bottom);
+      ctx.strokeStyle = 'rgba(155,149,142,0.5)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      if (yr === 2008) {
+        ctx.fillStyle = '#9A958E';
+        ctx.font = '10px Archivo, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.setLineDash([]);
+        ctx.fillText('Crisis', x + 4, yScale.top + 13);
+      }
+      ctx.restore();
+    });
+  }
+};
+
+function buildGlobal(range) {
+  const {labels, toyota, gm} = filterData(range);
+  if (globalChart) globalChart.destroy();
+  globalChart = new Chart(GC, {
+    type: 'line',
+    plugins: [crisisPlugin],
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Toyota',
+          data: toyota,
+          borderColor: '#CC0000',
+          backgroundColor: 'rgba(204,0,0,0.06)',
+          fill: true,
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#CC0000',
+        },
+        {
+          label: 'General Motors',
+          data: gm,
+          borderColor: '#1A52A8',
+          backgroundColor: 'rgba(26,82,168,0.04)',
+          fill: true,
+          borderWidth: 2,
+          borderDash: [6,3],
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#1A52A8',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}k uds.`,
+          },
+          backgroundColor: '#fff',
+          titleColor: '#1A1814',
+          bodyColor: '#5A5650',
+          borderColor: '#E2DDD6',
+          borderWidth: 1,
+          padding: 12,
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#9A958E', font: { size: 11, family: 'Archivo' }, maxRotation: 0 }
+        },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.05)', drawTicks: false },
+          border: { display: false },
+          ticks: {
+            color: '#9A958E',
+            font: { size: 11, family: 'Archivo' },
+            callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'k'
+          }
+        }
+      }
+    }
+  });
+}
+
+buildGlobal('todo');
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildGlobal(btn.dataset.range);
+  });
+});
+
+/* ── GM MINI CHART (brands, interactive) ─────────────── */
+const GM_YEARS = ['1970','1975','1980','1985','1990','1995','2000','2005','2008','2009','2010','2015','2020','2024'];
+const GM_BRANDS = [
+  { label:'Chevrolet',       color:'#E24B4A', data:[2100,2200,1900,2400,2100,2300,2500,2550,2300,1050,1700,1950,1350,1600] },
+  { label:'GMC',             color:'#378ADD', data:[350,360,300,380,330,410,460,480,450,250,390,490,370,445] },
+  { label:'Buick',           color:'#1D9E75', data:[460,420,440,500,420,440,450,400,370,225,370,380,340,370] },
+  { label:'Cadillac',        color:'#BA7517', data:[180,250,235,310,260,215,185,230,210,130,165,220,150,160] },
+  { label:'Pontiac †',       color:'#D85A30', data:[590,570,450,550,430,500,510,490,370,80,0,0,0,0] },
+  { label:'Oldsmobile †',    color:'#7F77DD', data:[620,600,510,570,490,530,570,0,0,0,0,0,0,0] },
+  { label:'Saturn †',        color:'#5DCAA5', data:[0,0,0,0,230,310,305,330,270,130,0,0,0,0] },
+];
+
+const GM_TOTALS = GM_YEARS.map((_,i) =>
+  GM_BRANDS.reduce((s,b) => s + (b.data[i] || 0), 0)
+);
+
+const gmDatasets = [
+  ...GM_BRANDS.map(b => ({
+    label: b.label,
+    data: b.data,
+    borderColor: b.color,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    tension: 0.4,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+    spanGaps: false,
+    _color: b.color,
+    _isTotal: false,
+  })),
+  {
+    label: 'Total GM',
+    data: GM_TOTALS,
+    borderColor: '#1A1814',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderDash: [5,3],
+    tension: 0.4,
+    pointRadius: 0,
+    pointHoverRadius: 5,
+    spanGaps: true,
+    _color: '#1A1814',
+    _isTotal: true,
+  }
+];
+
+const gmMiniChart = new Chart(document.getElementById('gmMiniChart'), {
+  type: 'line',
+  data: { labels: GM_YEARS, datasets: gmDatasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        filter: i => i.parsed.y > 0,
+        callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}k` },
+        backgroundColor: '#fff',
+        titleColor: '#1A1814',
+        bodyColor: '#5A5650',
+        borderColor: '#E2DDD6',
+        borderWidth: 1,
+        padding: 10,
+      }
+    },
+    scales: {
+      x: { grid:{display:false}, ticks:{color:'#9A958E',font:{size:10,family:'Archivo'},maxRotation:0} },
+      y: { grid:{color:'rgba(0,0,0,0.05)',drawTicks:false}, border:{display:false}, ticks:{color:'#9A958E',font:{size:10,family:'Archivo'},callback:v=>v>=1000?(v/1000).toFixed(1)+'M':v+'k'} }
+    }
+  }
+});
+
+const gmFiltersEl = document.getElementById('gm-brand-filters');
+gmDatasets.forEach((ds, i) => {
+  const color = ds._color;
+  const isTotal = ds._isTotal;
+  const btn = document.createElement('button');
+  btn.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;border:1.5px solid ${color};background:${color};color:${isTotal?'#fff':'#fff'};font-size:10px;font-family:Archivo,sans-serif;font-weight:500;cursor:pointer;transition:opacity .15s,background .15s;letter-spacing:.03em`;
+  const icon = isTotal
+    ? `<span style="display:inline-block;width:14px;height:0;border-top:2px dashed #fff"></span>`
+    : `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;opacity:.9"></span>`;
+  btn.innerHTML = `${icon}${ds.label}`;
+  let active = true;
+  btn.addEventListener('click', () => {
+    active = !active;
+    gmMiniChart.data.datasets[i].hidden = !active;
+    btn.style.opacity = active ? '1' : '0.35';
+    btn.style.background = active ? color : 'transparent';
+    btn.style.color = active ? '#fff' : color;
+    if (isTotal) {
+      const dIcon = btn.querySelector('span');
+      if (dIcon) dIcon.style.borderTopColor = active ? '#fff' : color;
+    }
+    gmMiniChart.update();
+  });
+  gmFiltersEl.appendChild(btn);
+});
+
+/* ── TOYOTA MINI CHART ───────────────────────────────── */
+const TOY_YEARS = ['1970','1975','1980','1985','1990','1995','2000','2005','2008','2009','2010','2011','2015','2019','2020','2024'];
+const TOY_DATA  = [1609,2336,3293,3790,4217,4603,5742,8524,8972,7234,8557,7908,10151,10740,9528,11011];
+
+new Chart(document.getElementById('toyotaMiniChart'), {
+  type: 'line',
+  data: {
+    labels: TOY_YEARS,
+    datasets: [{
+      label: 'Toyota',
+      data: TOY_DATA,
+      borderColor: '#CC0000',
+      backgroundColor: 'rgba(204,0,0,0.06)',
+      fill: true,
+      borderWidth: 2,
+      tension: 0.4,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: ctx => ` Toyota: ${ctx.parsed.y.toLocaleString()}k uds.` },
+        backgroundColor: '#fff',
+        bodyColor: '#5A5650',
+        borderColor: '#E2DDD6',
+        borderWidth: 1,
+        padding: 10,
+      }
+    },
+    scales: {
+      x: { grid:{display:false}, ticks:{color:'#9A958E',font:{size:10,family:'Archivo'},maxRotation:0} },
+      y: { grid:{color:'rgba(0,0,0,0.05)',drawTicks:false}, border:{display:false}, ticks:{color:'#9A958E',font:{size:10,family:'Archivo'},callback:v=>v>=1000?(v/1000).toFixed(1)+'M':v+'k'} }
+    }
+  }
+});
+
+/* ── VOLATILITY SECTION ──────────────────────────────── */
+const VOL_YEARS = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+const VOL_TOY   = [5742,5910,6400,6780,7000,8524,9016,9497,8972,7234,8557,7908,9748,10117,10230,10151,10213,10466,10529,10740,9528,10498,10489,11478,11011];
+const VOL_GM    = [5500,5300,5200,5100,5000,5600,5200,5200,4500,2100,3500,4200,4600,4500,4500,4500,4300,4200,4100,4100,2900,3900,3800,4200,6001];
+
+function volYoy(arr) {
+  return arr.map((v,i) => i === 0 ? null : parseFloat(((v - arr[i-1]) / arr[i-1] * 100).toFixed(2)));
+}
+function volStdev(arr) {
+  const clean = arr.filter(x => x !== null);
+  const mean = clean.reduce((a,b)=>a+b,0) / clean.length;
+  const variance = clean.reduce((a,b)=>a + (b-mean)**2, 0) / clean.length;
+  return Math.sqrt(variance);
+}
+function volRollStd(arr, w) {
+  return arr.map((_, i) => {
+    if (i < w) return null;
+    const slice = arr.slice(i-w+1, i+1).filter(x => x !== null);
+    if (slice.length < 3) return null;
+    const mean = slice.reduce((a,b)=>a+b,0)/slice.length;
+    const variance = slice.reduce((a,b)=>a+(b-mean)**2,0)/slice.length;
+    return parseFloat(Math.sqrt(variance).toFixed(2));
+  });
+}
+
+const toyYOY = volYoy(VOL_TOY);
+const gmYOY  = volYoy(VOL_GM);
+const volLabels = VOL_YEARS.map(String);
+
+const toySigma = volStdev(toyYOY).toFixed(1);
+const gmSigma  = volStdev(gmYOY).toFixed(1);
+const volRatio = (gmSigma / toySigma).toFixed(1);
+const toyMax = Math.max(...toyYOY.filter(x=>x!==null).map(Math.abs)).toFixed(0);
+const gmMax  = Math.max(...gmYOY.filter(x=>x!==null).map(Math.abs)).toFixed(0);
+
+const volKpiRow = document.getElementById('vol-kpis');
+[
+  { cls:'toy', vcls:'toy', label:'σ Toyota (2001–24)', val:'±'+toySigma+'%', sub:'desv. estándar YoY' },
+  { cls:'gm',  vcls:'gm',  label:'σ GM (2001–24)',     val:'±'+gmSigma+'%',  sub:'desv. estándar YoY' },
+  { cls:'',    vcls:'',    label:'GM más volátil',     val: volRatio+'×',    sub:'veces más inestable' },
+  { cls:'',    vcls:'',    label:'Peor año',           val:'−'+gmMax+'% GM', sub:'vs −'+toyMax+'% Toyota' },
+].forEach(k => {
+  volKpiRow.innerHTML += `<div class="vol-kpi ${k.cls}">
+    <p class="vol-kpi-label">${k.label}</p>
+    <p class="vol-kpi-val ${k.vcls}">${k.val}</p>
+    <p class="vol-kpi-sub">${k.sub}</p>
+  </div>`;
+});
+
+const volCrisisPlugin = {
+  id:'volCrisis',
+  afterDraw(chart) {
+    const ls = chart.data.labels, xs = chart.scales.x, ys = chart.scales.y, ctx = chart.ctx;
+    [2008,2009].forEach(yr => {
+      const idx = ls.indexOf(String(yr));
+      if (idx === -1) return;
+      const x = xs.getPixelForValue(idx);
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(x, ys.top); ctx.lineTo(x, ys.bottom);
+      ctx.strokeStyle = 'rgba(155,149,142,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([4,3]); ctx.stroke();
+      ctx.restore();
+    });
+  }
+};
+
+new Chart(document.getElementById('yoyChart'), {
+  type:'bar', plugins:[volCrisisPlugin],
+  data:{ labels: volLabels,
+    datasets:[
+      { label:'Toyota', data:toyYOY, backgroundColor:toyYOY.map(v => v===null?'transparent':v>=0?'rgba(204,0,0,0.78)':'rgba(204,0,0,0.40)'), borderRadius:2, borderSkipped:false },
+      { label:'General Motors', data:gmYOY, backgroundColor:gmYOY.map(v => v===null?'transparent':v>=0?'rgba(26,82,168,0.78)':'rgba(26,82,168,0.40)'), borderRadius:2, borderSkipped:false },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        callbacks:{ label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y!==null ? (ctx.parsed.y>0?'+':'')+ctx.parsed.y.toFixed(1)+'%' : '—'}` },
+        backgroundColor:'#fff', titleColor:'#1A1814', bodyColor:'#5A5650', borderColor:'#E2DDD6', borderWidth:1, padding:10,
+      }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{ color:'#9A958E', font:{size:10,family:'Archivo'}, maxRotation:0, autoSkip:false, callback:(v,i)=>i%2===0?volLabels[i]:'' } },
+      y:{ grid:{ color:'rgba(0,0,0,0.05)', drawTicks:false }, border:{display:false},
+          ticks:{ color:'#9A958E', font:{size:10,family:'Archivo'}, callback:v=>(v>0?'+':'')+v+'%' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('volChart'), {
+  type:'line', plugins:[volCrisisPlugin],
+  data:{ labels: volLabels,
+    datasets:[
+      { label:'Toyota σ', data:volRollStd(toyYOY,5), borderColor:'#CC0000', backgroundColor:'rgba(204,0,0,0.06)', fill:true, borderWidth:2, tension:0.4, pointRadius:0, pointHoverRadius:4, spanGaps:false },
+      { label:'GM σ', data:volRollStd(gmYOY,5), borderColor:'#1A52A8', backgroundColor:'rgba(26,82,168,0.04)', fill:true, borderWidth:2, borderDash:[5,3], tension:0.4, pointRadius:0, pointHoverRadius:4, spanGaps:false },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        callbacks:{ label:ctx=>` ${ctx.dataset.label}: ±${ctx.parsed.y!==null?ctx.parsed.y.toFixed(1):'—'}%` },
+        backgroundColor:'#fff', titleColor:'#1A1814', bodyColor:'#5A5650', borderColor:'#E2DDD6', borderWidth:1, padding:10,
+      }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{ color:'#9A958E', font:{size:10,family:'Archivo'}, maxRotation:0, autoSkip:false, callback:(v,i)=>i%2===0?volLabels[i]:'' } },
+      y:{ grid:{ color:'rgba(0,0,0,0.05)', drawTicks:false }, border:{display:false},
+          ticks:{ color:'#9A958E', font:{size:10,family:'Archivo'}, callback:v=>'±'+v+'%' } }
+    }
+  }
+});
+
+/* ── SORPASO 2004-2014 ──────────────────────────────── */
+const SORPASO_YRS = [2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014];
+const SORPASO_TOY = [7.52,7.97,8.80,9.37,8.97,7.23,8.56,7.91,9.75,9.98,10.23];
+const SORPASO_GM  = [9.02,9.17,9.10,9.37,8.36,6.46,8.39,9.03,9.29,9.72,9.92];
+
+const sorpasoAnnotations = [
+  { year:2008, text:'Sorpaso', side:'top', color:'#CC0000' },
+  { year:2011, text:'Tsunami', side:'bottom', color:'#1A52A8' },
+  { year:2012, text:'Definitivo', side:'top', color:'#CC0000' },
+];
+
+const sorpasoPlugin = {
+  id:'sorpasoAnnot',
+  afterDraw(chart) {
+    const xs = chart.scales.x, ys = chart.scales.y, ctx = chart.ctx;
+    const labels = chart.data.labels;
+    sorpasoAnnotations.forEach(a => {
+      const idx = labels.indexOf(a.year);
+      if (idx === -1) return;
+      const x = xs.getPixelForValue(idx);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, ys.top);
+      ctx.lineTo(x, ys.bottom);
+      ctx.strokeStyle = 'rgba(155,149,142,0.4)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = a.color;
+      ctx.font = '500 10.5px Archivo, sans-serif';
+      ctx.textAlign = 'center';
+      if (a.side === 'top') {
+        ctx.fillText(a.text, x, ys.top + 12);
+      } else {
+        ctx.fillText(a.text, x, ys.bottom - 6);
+      }
+      ctx.restore();
+    });
+  }
+};
+
+new Chart(document.getElementById('sorpasoChart'), {
+  type:'line',
+  plugins:[sorpasoPlugin],
+  data:{ labels:SORPASO_YRS,
+    datasets:[
+      { label:'Toyota', data:SORPASO_TOY, borderColor:'#CC0000', backgroundColor:'rgba(204,0,0,0.06)', fill:true, borderWidth:2.5, tension:0.35, pointRadius:3.5, pointBackgroundColor:'#CC0000', pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:6 },
+      { label:'GM', data:SORPASO_GM, borderColor:'#1A52A8', backgroundColor:'rgba(26,82,168,0.04)', fill:true, borderWidth:2.5, borderDash:[6,3], tension:0.35, pointRadius:3.5, pointBackgroundColor:'#1A52A8', pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:6 },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    layout:{ padding:{ top:22, bottom:18 } },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        callbacks:{
+          title: ctx => `${ctx[0].label}`,
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}M uds.`,
+          footer: items => {
+            if (items.length < 2) return '';
+            const diff = items[0].parsed.y - items[1].parsed.y;
+            const leader = diff > 0 ? items[0].dataset.label : items[1].dataset.label;
+            return `${leader} lidera por ${Math.abs(diff).toFixed(2)}M`;
+          }
+        },
+        backgroundColor:'#fff', titleColor:'#1A1814', bodyColor:'#5A5650', footerColor:'#1A1814',
+        borderColor:'#E2DDD6', borderWidth:1, padding:12, displayColors:true, boxWidth:8, boxHeight:8,
+      }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{ color:'#9A958E', font:{size:11, family:'Archivo, sans-serif'}, maxRotation:0 } },
+      y:{
+        min:5.5, max:11,
+        grid:{ color:'rgba(0,0,0,0.05)', drawTicks:false }, border:{display:false},
+        ticks:{ color:'#9A958E', font:{size:11, family:'Archivo, sans-serif'}, callback:v=>v.toFixed(1)+'M' }
+      }
+    }
+  }
+});
+
+/* ── INGRESOS 2000-2024 ──────────────────────────────── */
+const REV_YRS = [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+const REV_TOY = [116,120,134,146,163,173,179,204,262,209,200,235,226,222,256,237,262,249,276,273,281,249,257,280,298];
+const REV_GM  = [184,177,186,185,193,192,207,181,149,104,135,150,152,155,155,152,166,145,147,137,122,127,156,171,187];
+
+const REV_RANGES = {
+  todo:      { start:2000, end:2024, label:'Todo' },
+  precrisis: { start:2000, end:2007, label:'Pre-crisis' },
+  crisis:    { start:2007, end:2012, label:'Crisis' },
+  decada:    { start:2014, end:2024, label:'Última década' },
+};
+
+function filterRev(key) {
+  const { start, end } = REV_RANGES[key];
+  const idx = REV_YRS.reduce((a,y,i) => (y>=start && y<=end ? [...a,i] : a), []);
+  return {
+    labels: idx.map(i => REV_YRS[i]),
+    toy: idx.map(i => REV_TOY[i]),
+    gm:  idx.map(i => REV_GM[i]),
+  };
+}
+
+const revFiltersEl = document.getElementById('rev-filters');
+Object.entries(REV_RANGES).forEach(([key, r], i) => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn' + (i === 0 ? ' active' : '');
+  btn.dataset.key = key;
+  btn.textContent = r.label;
+  btn.addEventListener('click', () => {
+    revFiltersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildRevChart(key);
+  });
+  revFiltersEl.appendChild(btn);
+});
+
+const revKpiEl = document.getElementById('rev-kpis');
+const revToy24 = REV_TOY[REV_TOY.length-1], revGm24 = REV_GM[REV_GM.length-1];
+const revDiff = revToy24 - revGm24;
+const revRatio = (revToy24 / revGm24).toFixed(2);
+
+[
+  { cls:'toy',     vcls:'toy', label:'Toyota 2024',    val:'$'+revToy24+' B', sub:'ingresos anuales' },
+  { cls:'gm',      vcls:'gm',  label:'GM 2024',        val:'$'+revGm24+' B',  sub:'ingresos anuales' },
+  { cls:'neutral', vcls:'',    label:'Ventaja Toyota', val:'+$'+revDiff+' B', sub:revRatio+'× sobre GM' },
+].forEach(k => {
+  revKpiEl.innerHTML += `<div class="rev-kpi ${k.cls}">
+    <p class="rev-kpi-label">${k.label}</p>
+    <p class="rev-kpi-val ${k.vcls}">${k.val}</p>
+    <p class="rev-kpi-sub">${k.sub}</p>
+  </div>`;
+});
+
+let revChart = null;
+function buildRevChart(rangeKey) {
+  const { labels, toy, gm } = filterRev(rangeKey);
+  if (revChart) revChart.destroy();
+  revChart = new Chart(document.getElementById('revChart'), {
+    type:'line',
+    data:{ labels,
+      datasets:[
+        { label:'Toyota', data:toy, borderColor:'#CC0000', backgroundColor:'rgba(204,0,0,0.06)', fill:true, borderWidth:2.2, tension:0.35, pointRadius:labels.length<=12?3:0, pointHoverRadius:5, pointBackgroundColor:'#CC0000', pointBorderColor:'#fff', pointBorderWidth:1.5 },
+        { label:'General Motors', data:gm, borderColor:'#1A52A8', backgroundColor:'rgba(26,82,168,0.04)', fill:true, borderWidth:2.2, borderDash:[6,3], tension:0.35, pointRadius:labels.length<=12?3:0, pointHoverRadius:5, pointBackgroundColor:'#1A52A8', pointBorderColor:'#fff', pointBorderWidth:1.5 },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          callbacks:{
+            label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y} B`,
+            footer: items => {
+              if (items.length < 2) return '';
+              const d = items[0].parsed.y - items[1].parsed.y;
+              const leader = d > 0 ? items[0].dataset.label : items[1].dataset.label;
+              return `${leader} lidera por $${Math.abs(d).toFixed(0)} B`;
+            }
+          },
+          backgroundColor:'#fff', titleColor:'#1A1814', bodyColor:'#5A5650', footerColor:'#1A1814',
+          borderColor:'#E2DDD6', borderWidth:1, padding:12,
+        }
+      },
+      scales:{
+        x:{ grid:{display:false}, ticks:{ color:'#9A958E', font:{size:11, family:'Archivo'}, maxRotation:0 } },
+        y:{
+          grid:{ color:'rgba(0,0,0,0.05)', drawTicks:false }, border:{display:false},
+          ticks:{ color:'#9A958E', font:{size:11, family:'Archivo'}, callback:v=>'$'+v+'B' }
+        }
+      }
+    }
+  });
+}
+
+buildRevChart('todo');
+
+/* ── MONTE CARLO 2025-2030 ──────────────────────────── */
+const MC_YEARS = [2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030];
+const MC_TOY_HIST = [9.53, 10.50, 10.49, 11.48, 11.01];
+const MC_GM_HIST  = [2.90,  3.90,  3.80,  4.20,  6.00];
+
+const MC_TOY_BASE=11.01, MC_TOY_MU=0.0229, MC_TOY_SIGMA=0.10;
+const MC_GM_BASE=6.00,   MC_GM_MU=-0.0206, MC_GM_SIGMA=0.23;
+const MC_Z80 = 1.2816;
+
+function mcProj(base, mu, sigma, years) {
+  const medians=[base], p10=[base], p90=[base];
+  for (let t=1; t<=years; t++) {
+    const m = base * Math.pow(1+mu, t);
+    const spread = Math.exp(MC_Z80 * sigma * Math.sqrt(t));
+    medians.push(m);
+    p10.push(m / spread);
+    p90.push(m * spread);
+  }
+  return { medians, p10, p90 };
+}
+
+const mcToyP = mcProj(MC_TOY_BASE, MC_TOY_MU, MC_TOY_SIGMA, 6);
+const mcGmP  = mcProj(MC_GM_BASE,  MC_GM_MU,  MC_GM_SIGMA,  6);
+const mcNHist = MC_TOY_HIST.length;
+
+function mcAlign(hist, projArr, isMain) {
+  const a = new Array(MC_YEARS.length).fill(null);
+  if (isMain) for (let i=0; i<hist.length; i++) a[i] = hist[i];
+  for (let i=0; i<projArr.length; i++) a[mcNHist-1+i] = projArr[i];
+  return a;
+}
+
+const mcToyLine = mcAlign(MC_TOY_HIST, mcToyP.medians, true);
+const mcToyP10L = mcAlign(MC_TOY_HIST, mcToyP.p10, false);
+const mcToyP90L = mcAlign(MC_TOY_HIST, mcToyP.p90, false);
+const mcGmLine  = mcAlign(MC_GM_HIST,  mcGmP.medians, true);
+const mcGmP10L  = mcAlign(MC_GM_HIST,  mcGmP.p10, false);
+const mcGmP90L  = mcAlign(MC_GM_HIST,  mcGmP.p90, false);
+
+const mcToyLo=mcToyP.p10[6], mcToyHi=mcToyP.p90[6], mcToyMed=mcToyP.medians[6];
+const mcGmLo=mcGmP.p10[6],   mcGmHi=mcGmP.p90[6],   mcGmMed=mcGmP.medians[6];
+
+const mcDiffE = Math.log(MC_GM_BASE/MC_TOY_BASE) + 6*(Math.log(1+MC_GM_MU) - Math.log(1+MC_TOY_MU));
+const mcDiffSd = Math.sqrt(6*(MC_GM_SIGMA*MC_GM_SIGMA + MC_TOY_SIGMA*MC_TOY_SIGMA));
+function mcErf(x) {
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const sign = x<0?-1:1; x=Math.abs(x);
+  const t = 1/(1+p*x);
+  const y = 1 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+const mcProbGmOverToy = (1 - 0.5*(1 + mcErf(-mcDiffE/mcDiffSd/Math.sqrt(2)))) * 100;
+
+const mcKpiEl = document.getElementById('mc-kpis');
+[
+  { cls:'toy', vcls:'toy', label:'Toyota 2030 (mediana)', val: mcToyMed.toFixed(1)+'M', sub:'80%: '+mcToyLo.toFixed(1)+'–'+mcToyHi.toFixed(1)+'M' },
+  { cls:'gm',  vcls:'gm',  label:'GM 2030 (mediana)',     val: mcGmMed.toFixed(1)+'M',  sub:'80%: '+mcGmLo.toFixed(1)+'–'+mcGmHi.toFixed(1)+'M' },
+  { cls:'neutral', vcls:'', label:'Prob. GM > Toyota 2030', val: mcProbGmOverToy.toFixed(1)+'%', sub:'escenario de reversión' },
+].forEach(k => {
+  mcKpiEl.innerHTML += `<div class="rev-kpi ${k.cls}">
+    <p class="rev-kpi-label">${k.label}</p>
+    <p class="rev-kpi-val ${k.vcls}">${k.val}</p>
+    <p class="rev-kpi-sub">${k.sub}</p>
+  </div>`;
+});
+
+const mcDividePlugin = {
+  id:'mcDivide',
+  afterDraw(chart) {
+    const xs = chart.scales.x, ys = chart.scales.y, ctx = chart.ctx;
+    const idx = chart.data.labels.indexOf(2024);
+    if (idx === -1) return;
+    const x = xs.getPixelForValue(idx);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x, ys.top);
+    ctx.lineTo(x, ys.bottom);
+    ctx.strokeStyle = 'rgba(155,149,142,0.45)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#9A958E';
+    ctx.font = '500 10.5px Archivo, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Proyección →', x + 6, ys.top + 12);
+    ctx.textAlign = 'right';
+    ctx.fillText('← Histórico', x - 6, ys.top + 12);
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('mcChart'), {
+  type:'line',
+  plugins:[mcDividePlugin],
+  data:{ labels:MC_YEARS,
+    datasets:[
+      { label:'Toyota p10', data:mcToyP10L, borderColor:'rgba(0,0,0,0)', backgroundColor:'transparent', pointRadius:0, borderWidth:0, fill:false, tension:0.3 },
+      { label:'Toyota p90', data:mcToyP90L, borderColor:'rgba(0,0,0,0)', backgroundColor:'rgba(204,0,0,0.12)', pointRadius:0, borderWidth:0, fill:'-1', tension:0.3 },
+      { label:'Toyota',     data:mcToyLine, borderColor:'#CC0000', backgroundColor:'transparent', borderWidth:2.2, tension:0.3, pointRadius:3, pointBackgroundColor:'#CC0000', pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:5, fill:false },
+      { label:'GM p10', data:mcGmP10L, borderColor:'rgba(0,0,0,0)', backgroundColor:'transparent', pointRadius:0, borderWidth:0, fill:false, tension:0.3 },
+      { label:'GM p90', data:mcGmP90L, borderColor:'rgba(0,0,0,0)', backgroundColor:'rgba(26,82,168,0.10)', pointRadius:0, borderWidth:0, fill:'-1', tension:0.3 },
+      { label:'GM',     data:mcGmLine,  borderColor:'#1A52A8', backgroundColor:'transparent', borderWidth:2.2, borderDash:[6,3], tension:0.3, pointRadius:3, pointBackgroundColor:'#1A52A8', pointBorderColor:'#fff', pointBorderWidth:1.5, pointHoverRadius:5, fill:false },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    layout:{ padding:{ top:22 } },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        filter: item => (item.dataset.label==='Toyota' || item.dataset.label==='GM') && item.parsed.y !== null,
+        callbacks:{
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}M`
+        },
+        backgroundColor:'#fff', titleColor:'#1A1814', bodyColor:'#5A5650',
+        borderColor:'#E2DDD6', borderWidth:1, padding:12,
+      }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{ color:'#9A958E', font:{size:11, family:'Archivo'}, maxRotation:0 } },
+      y:{
+        min:0, suggestedMax:20,
+        grid:{ color:'rgba(0,0,0,0.05)', drawTicks:false }, border:{display:false},
+        ticks:{ color:'#9A958E', font:{size:11, family:'Archivo'}, callback:v=>v.toFixed(0)+'M' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
